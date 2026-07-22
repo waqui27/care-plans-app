@@ -26,9 +26,11 @@ Locally you need no client config — the Vite dev proxy forwards `/api` to the 
 The client calls `/api` (same origin) by default. When the frontend and API live
 on different domains (e.g. client on Vercel/Netlify, API on Render), set:
 
-- **Client** — `VITE_API_URL` = the API's full base, including `/api`
+- **Client** — `VITE_API_URL` = the API's full base, **including `/api`**
   (e.g. `https://your-api.onrender.com/api`). See `client/.env.example`. Vite
-  bakes this in at build time, so set it before `npm run build`.
+  bakes this in at build time, so set it before `npm run build`. Omitting `/api`
+  makes every call hit the wrong path (e.g. `/health` → 404). `client/vercel.json`
+  adds the SPA rewrite so deep links like `/login` don't 404 on Vercel.
 - **Server** — `PUBLIC_API_URL` = the API's public origin
   (e.g. `https://your-api.onrender.com`), so the WhatsApp webhook callback URL
   shown in Settings points at the API, not the client. Optional — it otherwise
