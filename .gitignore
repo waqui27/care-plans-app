@@ -1,0 +1,23 @@
+# dependencies
+node_modules/
+
+# environment — holds JWT secret + seeded credentials, never commit
+.env
+*.env.local
+
+# local MongoDB data
+.mongo-data/
+
+# builds
+client/dist/
+dist/
+
+# logs
+*.log
+npm-debug.log*
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
