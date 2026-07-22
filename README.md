@@ -37,6 +37,13 @@ on different domains (e.g. client on Vercel/Netlify, API on Render), set:
 CORS is open by default (`app.use(cors())`); restrict it to your client origin
 before going live if you want to lock it down.
 
+**Free-tier cold starts:** hosts like Render's free plan spin the API down when
+idle, so the first request takes ~30–60s to wake it. The client handles this
+gracefully — it warms the API on load (`GET /api/health`) and shows a red
+"Connecting to the server…" banner whenever a request is slow or the server is
+returning 502/503/504, retrying automatically and hiding the banner once it
+responds. No config needed; it's a no-op when the API is always-on.
+
 On first boot the server seeds two accounts:
 
 | Account | Email | Password | Lands on |

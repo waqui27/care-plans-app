@@ -19,6 +19,8 @@ app.use(cors());
 // keep the raw body so the WhatsApp webhook can verify Meta's signature
 app.use(express.json({ verify: (req, _res, buf) => { req.rawBody = buf; } }));
 
+app.get('/api/health', (_req, res) => res.json({ ok: true })); // cheap wake/readiness ping (no DB)
+
 app.use('/api/auth', authRoutes);
 app.use('/api', publicRoutes);            // POST /api/track · POST /api/leads — public, mounted first so patient lead capture skips auth; GET/PATCH /api/leads fall through to the authed router below
 app.use('/api/admins', adminRoutes);

@@ -1,5 +1,7 @@
+import { useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { auth } from './api.js';
+import { auth, pingServer } from './api.js';
+import ServerStatusBanner from './components/ServerStatusBanner.jsx';
 import Login from './pages/Login.jsx';
 import PatientPage from './pages/PatientPage.jsx';
 import Dashboard from './pages/Dashboard.jsx';
@@ -17,9 +19,13 @@ function RequireAuth({ children, role }) {
 }
 
 export default function App() {
+  useEffect(() => { pingServer(); }, []); // warm the free-tier API on load
+
   return (
-    <Routes>
-      <Route path="/login" element={<Login />} />
+    <>
+      <ServerStatusBanner />
+      <Routes>
+        <Route path="/login" element={<Login />} />
       <Route path="/p/:slug" element={<PatientPage />} />
       <Route path="/dashboard" element={<RequireAuth><Dashboard /></RequireAuth>} />
       <Route path="/pages/:id" element={<RequireAuth><PageEditor /></RequireAuth>} />
@@ -27,8 +33,9 @@ export default function App() {
       <Route path="/leads" element={<RequireAuth><Leads /></RequireAuth>} />
       <Route path="/analytics" element={<RequireAuth><Analytics /></RequireAuth>} />
       <Route path="/settings" element={<RequireAuth><Settings /></RequireAuth>} />
-      <Route path="/super" element={<RequireAuth role="superadmin"><Super /></RequireAuth>} />
-      <Route path="*" element={<Navigate to={auth.token ? (auth.role === 'superadmin' ? '/super' : '/dashboard') : '/login'} replace />} />
-    </Routes>
+        <Route path="/super" element={<RequireAuth role="superadmin"><Super /></RequireAuth>} />
+        <Route path="*" element={<Navigate to={auth.token ? (auth.role === 'superadmin' ? '/super' : '/dashboard') : '/login'} replace />} />
+      </Routes>
+    </>
   );
 }
