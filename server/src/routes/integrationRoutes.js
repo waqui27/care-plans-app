@@ -7,9 +7,13 @@ import { appendRow } from '../services/sheets.js';
 const router = Router();
 router.use(requireAuth);
 
-function view(user) {
+function view(user, req) {
   const s = user.integrations?.sheets || {};
   const w = user.integrations?.wa || {};
+  // Meta must reach the SERVER, so build the callback from the API's own public
+  // origin — PUBLIC_API_URL if set, otherwise the incoming request's host.
+  const apiOrigin = (process.env.PUBLIC_API_URL || `${req.protocol}://${req.get('host')}`).replace(/\/+$/, '');
+  const webhookPath = `/api/wa/webhook/${user._id}`;
   return {
     sheets: {
       allowed: user.allowIntegrations?.sheets !== false,
@@ -29,7 +33,8 @@ function view(user) {
       hasSecret: !!w.appSecret,
       lastEventAt: w.lastEventAt || null,
       lastError: w.lastError || '',
-      webhookPath: `/api/wa/webhook/${user._id}`,
+      webhookPath,
+      webhookUrl: `${apiOrigin}${webhookPath}`,
     },
   };
 }
@@ -37,7 +42,7 @@ function view(user) {
 router.get('/', async (req, res) => {
   const me = await User.findById(req.user.id);
   if (!me) return res.status(404).json({ error: 'Account not found' });
-  res.json(view(me));
+  res.json(view(me, req));
 });
 
 router.patch('/sheets', async (req, res) => {
@@ -72,7 +77,7 @@ router.patch('/sheets', async (req, res) => {
   }
   s.lastError = '';
   await me.save();
-  res.json(view(me));
+  res.json(view(me, req));
 });
 
 router.post('/sheets/test', async (req, res) => {
@@ -108,7 +113,7 @@ router.patch('/wa', async (req, res) => {
   if (enabled !== undefined) w.enabled = !!enabled;
   w.lastError = '';
   await me.save();
-  res.json(view(me));
+  res.json(view(me, req));
 });
 
 export default router;

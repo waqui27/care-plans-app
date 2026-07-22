@@ -2,8 +2,10 @@
 node_modules/
 
 # environment — holds JWT secret + seeded credentials, never commit
+# ignores .env, .env.local, .env.production, etc. in any folder; keeps .env.example
 .env
-*.env.local
+.env.*
+!.env.example
 
 # local MongoDB data
 .mongo-data/

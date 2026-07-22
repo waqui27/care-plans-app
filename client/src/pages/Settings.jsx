@@ -150,7 +150,8 @@ export default function Settings() {
     setTimeout(() => setCopied(''), 1500);
   }
 
-  const webhookUrl = integ ? `${location.origin}${integ.wa.webhookPath}` : '';
+  // server-provided full URL (its own origin) — the client origin would be wrong when hosted separately
+  const webhookUrl = integ ? (integ.wa.webhookUrl || `${location.origin}${integ.wa.webhookPath}`) : '';
 
   const sheetsGuide = [
     'Open console.cloud.google.com and create (or pick) a project.',

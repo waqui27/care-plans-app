@@ -1,6 +1,8 @@
 import axios from 'axios';
 
-export const api = axios.create({ baseURL: '/api' });
+// Same-origin '/api' by default (dev proxy / co-hosted); set VITE_API_URL to the
+// API's full base when the client and server are on different domains.
+export const api = axios.create({ baseURL: import.meta.env.VITE_API_URL ?? '/api' });
 
 api.interceptors.request.use(config => {
   const token = localStorage.getItem('token');

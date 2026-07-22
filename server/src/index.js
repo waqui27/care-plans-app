@@ -14,6 +14,7 @@ import waWebhook from './routes/waWebhook.js';
 import { seed } from './seed.js';
 
 const app = express();
+app.set('trust proxy', 1); // hosting platforms terminate TLS upstream — trust X-Forwarded-* for req.protocol / req.ip
 app.use(cors());
 // keep the raw body so the WhatsApp webhook can verify Meta's signature
 app.use(express.json({ verify: (req, _res, buf) => { req.rawBody = buf; } }));

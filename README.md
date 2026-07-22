@@ -19,6 +19,24 @@ cd server && npm install && npm run dev
 cd client && npm install && npm run dev
 ```
 
+Locally you need no client config — the Vite dev proxy forwards `/api` to the API.
+
+## Deploying client and server on separate hosts
+
+The client calls `/api` (same origin) by default. When the frontend and API live
+on different domains (e.g. client on Vercel/Netlify, API on Render), set:
+
+- **Client** — `VITE_API_URL` = the API's full base, including `/api`
+  (e.g. `https://your-api.onrender.com/api`). See `client/.env.example`. Vite
+  bakes this in at build time, so set it before `npm run build`.
+- **Server** — `PUBLIC_API_URL` = the API's public origin
+  (e.g. `https://your-api.onrender.com`), so the WhatsApp webhook callback URL
+  shown in Settings points at the API, not the client. Optional — it otherwise
+  derives from the request host. See `server/.env.example`.
+
+CORS is open by default (`app.use(cors())`); restrict it to your client origin
+before going live if you want to lock it down.
+
 On first boot the server seeds two accounts:
 
 | Account | Email | Password | Lands on |
