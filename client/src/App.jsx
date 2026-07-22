@@ -19,7 +19,11 @@ function RequireAuth({ children, role }) {
 }
 
 export default function App() {
-  useEffect(() => { pingServer(); }, []); // warm the free-tier API on load
+  // warm the free-tier API on load — skip on public patient pages (they fetch
+  // their own data and never show the connecting banner)
+  useEffect(() => {
+    if (!window.location.pathname.startsWith('/p/')) pingServer();
+  }, []);
 
   return (
     <>
